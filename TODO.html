@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Modern</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --surface-hover: #f8f9fa;
+            --text: #1a1a2e;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+            --accent-events: #6c5ce7;
+            --accent-college: #00b894;
+            --accent-daily: #f59e0b;
+            --accent-weekly: #e84393;
+            --accent-events-light: #f0edfc;
+            --accent-college-light: #e6faf4;
+            --accent-daily-light: #fff9ed;
+            --accent-weekly-light: #fde8f2;
+            --accent-events-dark: #2d2466;
+            --accent-college-dark: #1a4a3a;
+            --accent-daily-dark: #5c3d0e;
+            --accent-weekly-dark: #5c1a3a;
+            --modal-overlay: rgba(0, 0, 0, 0.4);
+            --input-bg: #f9fafb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --success: #10b981;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --transition: 0.2s ease;
+            --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .dark-mode {
+            --bg: #0f0f1a;
+            --surface: #1a1a2e;
+            --surface-hover: #222240;
+            --text: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --border: #2a2a45;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --input-bg: #1e1e35;
+            --danger-light: #3b1c1c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            transition: background var(--transition), box-shadow var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #6c5ce7, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .header-brand h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+
+        .datetime-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+        .date-display {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.2px;
+        }
+        .time-display {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+        }
+        .time-display .seconds {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--surface-hover);
+            transform: rotate(15deg);
+            box-shadow: var(--shadow);
+        }
+
+        /* Section Tabs */
+        .section-tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 5px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .section-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            white-space: nowrap;
+            position: relative;
+            letter-spacing: 0.1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .tab-btn:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+        .tab-btn.active {
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+        .tab-btn.active.events-tab {
+            background: var(--accent-events);
+        }
+        .tab-btn.active.college-tab {
+            background: var(--accent-college);
+        }
+        .tab-btn.active.daily-tab {
+            background: var(--accent-daily);
+            color: #1a1a2e;
+        }
+        .tab-btn.active.weekly-tab {
+            background: var(--accent-weekly);
+        }
+        .tab-badge {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        .tab-btn.active.daily-tab .tab-badge {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Task List */
+        .task-list-container {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 8px 16px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            min-height: 200px;
+            transition: background var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .section-title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 8px 8px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+        }
+        .section-title-bar h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-events {
+            background: var(--accent-events);
+        }
+        .dot-college {
+            background: var(--accent-college);
+        }
+        .dot-daily {
+            background: var(--accent-daily);
+        }
+        .dot-weekly {
+            background: var(--accent-weekly);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+        .empty-state p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Task Card */
+        .task-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition);
+            border: 1px solid transparent;
+            position: relative;
+            background: var(--surface);
+        }
+        .task-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--border);
+        }
+        .task-card.completed .task-name {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        .task-card.completed .task-time {
+            opacity: 0.4;
+        }
+        .task-color-strip {
+            width: 4px;
+            height: 36px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+        .strip-events {
+            background: var(--accent-events);
+        }
+        .strip-college {
+            background: var(--accent-college);
+        }
+        .strip-daily {
+            background: var(--accent-daily);
+        }
+        .strip-weekly {
+            background: var(--accent-weekly);
+        }
+        .task-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .task-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: -0.2px;
+            color: var(--text);
+            transition: all var(--transition);
+        }
+        .task-meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .task-time {
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.75rem;
+        }
+        .task-date-tag {
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-weight: 500;
+            background: var(--input-bg);
+        }
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            background: transparent;
+            font-size: 12px;
+            color: transparent;
+        }
+        .task-card.completed .task-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+        }
+        .task-delete {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            opacity: 0;
+        }
+        .task-card:hover .task-delete {
+            opacity: 1;
+        }
+        .task-delete:hover {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* Add Button */
+        .add-task-btn {
+            width: 100%;
+            padding: 14px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            letter-spacing: 0.1px;
+            box-shadow: var(--shadow);
+        }
+        .add-task-btn:hover {
+            border-color: var(--accent-events);
+            color: var(--accent-events);
+            background: var(--surface-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--modal-overlay);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border);
+            animation: slideUp 0.25s ease;
+        }
+        .modal-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: var(--font);
+            transition: all var(--transition);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-events);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+        }
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+            letter-spacing: 0.1px;
+            font-family: var(--font);
+        }
+        .btn-primary {
+            background: var(--accent-events);
+            color: #fff;
+            flex: 1;
+            min-width: 100px;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+        }
+        .btn-warning {
+            background: var(--accent-daily);
+            color: #1a1a2e;
+            flex: 1;
+            min-width: 100px;
+        }
+        .btn-warning:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: var(--danger-light);
+        }
+
+        /* Overlap warning inside modal */
+        .overlap-alert {
+            background: #fff9ed;
+            border: 1px solid #fcd34d;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .dark-mode .overlap-alert {
+            background: #2d1f0a;
+            border-color: #7c5e10;
+        }
+        .overlap-alert .warn-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .overlap-alert .warn-text {
+            font-size: 0.85rem;
+            color: #92400e;
+            font-weight: 500;
+        }
+        .dark-mode .overlap-alert .warn-text {
+            color: #fcd34d;
+        }
+        .conflict-task-mini {
+            font-size: 0.78rem;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 6px;
+            margin-top: 4px;
+            color: var(--text);
+        }
+        .dark-mode .conflict-task-mini {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 200;
+            box-shadow: var(--shadow-xl);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2s forwards;
+            letter-spacing: 0.2px;
+        }
+        .dark-mode .toast {
+            background: #e8e8f0;
+            color: #1a1a2e;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 12px;
+            }
+            .header-brand {
+                justify-content: center;
+            }
+            .datetime-group {
+                align-items: center;
+            }
+            .theme-toggle {
+                align-self: center;
+            }
+            .section-tabs {
+                gap: 3px;
+                padding: 3px;
+            }
+            .tab-btn {
+                padding: 10px 10px;
+                font-size: 0.78rem;
+                min-width: 60px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="logo-icon">📋</div>
+                <h1>TODO</h1>
+            </div>
+            <div class="datetime-group">
+                <div class="date-display" id="dateDisplay">Loading...</div>
+                <div class="time-display" id="timeDisplay">--:--<span class="seconds"></span></div>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">
+                🌙
+            </button>
+        </header>
+
+        <!-- Section Tabs -->
+        <nav class="section-tabs" id="sectionTabs">
+            <button class="tab-btn active events-tab" data-section="events">
+                🎯 Events <span class="tab-badge" id="badge-events">0</span>
+            </button>
+            <button class="tab-btn college-tab" data-section="college">
+                🎓 College <span class="tab-badge" id="badge-college">0</span>
+            </button>
+            <button class="tab-btn daily-tab" data-section="daily">
+                🔄 Daily <span class="tab-badge" id="badge-daily">0</span>
+            </button>
+            <button class="tab-btn weekly-tab" data-section="weekly">
+                📅 Weekly <span class="tab-badge" id="badge-weekly">0</span>
+            </button>
+        </nav>
+
+        <!-- Task List -->
+        <div class="task-list-container" id="taskListContainer">
+            <div class="section-title-bar">
+                <h3><span class="section-dot dot-events" id="sectionDot"></span> <span id="sectionTitle">Events</span></h3>
+                <span style="font-size:0.8rem;color:var(--text-secondary)" id="sectionSubtitle"></span>
+            </div>
+            <div id="taskList">
+                <div class="empty-state">
+                    <div class="empty-icon">✨</div>
+                    <p>No tasks yet. Add one below!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Task Button -->
+        <button class="add-task-btn" id="addTaskBtn">+ Add New Task</button>
+    </div>
+
+    <!-- Add/Edit Task Modal -->
+    <div class="modal-overlay" id="taskModal" style="display:none;">
+        <div class="modal-card" id="taskModalCard">
+            <h3 id="modalTitle">📝 Add New Task</h3>
+            <div id="modalFormContent">
+                <div class="form-group">
+                    <label>Task Name</label>
+                    <input type="text" id="inputTaskName" placeholder="Enter task name..." maxlength="80">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="time" id="inputStartTime" value="09:00">
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="time" id="inputEndTime" value="10:00">
+                    </div>
+                </div>
+                <div class="form-group" id="dateFieldGroup">
+                    <label>Date</label>
+                    <input type="date" id="inputDate">
+                </div>
+                <div class="form-group" id="dayFieldGroup" style="display:none;">
+                    <label>Day of Week</label>
+                    <select id="inputDayOfWeek">
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnSaveTask">Save Task</button>
+                    <button class="btn btn-secondary" id="btnCancelTask">Cancel</button>
+                </div>
+            </div>
+            <!-- Overlap Warning (swapped in dynamically) -->
+            <div id="modalOverlapContent" style="display:none;">
+                <div class="overlap-alert">
+                    <span class="warn-icon">⚠️</span>
+                    <div>
+                        <div class="warn-text"><strong>Schedule Conflict!</strong> This task overlaps with:</div>
+                        <div id="conflictList"></div>
+                    </div>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px;">What would you like to do?</p>
+                <div class="btn-group">
+                    <button class="btn btn-warning" id="btnKeepOverlap">Keep Anyway</button>
+                    <button class="btn btn-primary" id="btnReschedule">🕐 Reschedule</button>
+                    <button class="btn btn-secondary" id="btnCancelOverlap">Go Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ─────────────────────────────────────
+            // STATE
+            // ─────────────────────────────────────
+            const STORAGE_KEY = 'taskflow_tasks';
+            const THEME_KEY = 'taskflow_dark_mode';
+
+            let tasks = [];
+            let currentSection = 'events';
+            let isDarkMode = false;
+            let pendingTask = null; // Task being built when overlap is detected
+            let pendingResolved = false;
+
+            // ─────────────────────────────────────
+            // DOM REFS
+            // ─────────────────────────────────────
+            const $dateDisplay = document.getElementById('dateDisplay');
+            const $timeDisplay = document.getElementById('timeDisplay');
+            const $themeToggle = document.getElementById('themeToggle');
+            const $sectionTabs = document.getElementById('sectionTabs');
+            const $taskList = document.getElementById('taskList');
+            const $sectionTitle = document.getElementById('sectionTitle');
+            const $sectionDot = document.getElementById('sectionDot');
+            const $sectionSubtitle = document.getElementById('sectionSubtitle');
+            const $addTaskBtn = document.getElementById('addTaskBtn');
+            const $taskModal = document.getElementById('taskModal');
+            const $modalTitle = document.getElementById('modalTitle');
+            const $modalFormContent = document.getElementById('modalFormContent');
+            const $modalOverlapContent = document.getElementById('modalOverlapContent');
+            const $conflictList = document.getElementById('conflictList');
+            const $inputTaskName = document.getElementById('inputTaskName');
+            const $inputStartTime = document.getElementById('inputStartTime');
+            const $inputEndTime = document.getElementById('inputEndTime');
+            const $inputDate = document.getElementById('inputDate');
+            const $dateFieldGroup = document.getElementById('dateFieldGroup');
+            const $dayFieldGroup = document.getElementById('dayFieldGroup');
+            const $inputDayOfWeek = document.getElementById('inputDayOfWeek');
+            const $btnSaveTask = document.getElementById('btnSaveTask');
+            const $btnCancelTask = document.getElementById('btnCancelTask');
+            const $btnKeepOverlap = document.getElementById('btnKeepOverlap');
+            const $btnReschedule = document.getElementById('btnReschedule');
+            const $btnCancelOverlap = document.getElementById('btnCancelOverlap');
+            const $badgeEvents = document.getElementById('badge-events');
+            const $badgeCollege = document.getElementById('badge-college');
+            const $badgeDaily = document.getElementById('badge-daily');
+            const $badgeWeekly = document.getElementById('badge-weekly');
+
+            // ─────────────────────────────────────
+            // HELPERS
+            // ─────────────────────────────────────
+            function timeToMinutes(timeStr) {
+                if (!timeStr) return 0;
+                const [h, m] = timeStr.split(':').map(Number);
+                return h * 60 + (m || 0);
+            }
+
+            function minutesToTime(minutes) {
+                const h = Math.floor(minutes / 60) % 24;
+                const m = minutes % 60;
+                return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+            }
+
+            function formatTime12h(timeStr) {
+                const mins = timeToMinutes(timeStr);
+                const h = Math.floor(mins / 60);
+                const m = mins % 60;
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const h12 = h % 12 || 12;
+                return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+            }
+
+            function generateId() {
+                return 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+            }
+
+            function getTodayDateStr() {
+                const d = new Date();
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate())
+                    .padStart(2, '0');
+            }
+
+            function getDayName(dayIndex) {
+                return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIndex];
+            }
+
+            // ─────────────────────────────────────
+            // PERSISTENCE
+            // ─────────────────────────────────────
+            function saveTasks() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            }
+
+            function loadTasks() {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    try {
+                        tasks = JSON.parse(raw);
+                    } catch (e) {
+                        tasks = [];
+                    }
+                }
+                if (!tasks.length) {
+                    // Seed with sample data
+                    const today = getTodayDateStr();
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2,
+                        '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
+                    tasks = [
+                        { id: generateId(), name: 'Team Standup Meeting', startTime: '09:00', endTime: '09:30',
+                            date: today, section: 'events', completed: false },
+                        { id: generateId(), name: 'Physics Lecture', startTime: '10:00', endTime: '11:30',
+                            date: today, section: 'college', completed: false },
+                        { id: generateId(), name: 'Morning Workout', startTime: '07:00', endTime: '08:00',
+                            date: null, section: 'daily', completed: false },
+                        { id: generateId(), name: 'Grocery Shopping', startTime: '16:00', endTime: '17:00',
+                            date: null, section: 'weekly', dayOfWeek: 5, completed: false },
+                        { id: generateId(), name: 'Project Review', startTime: '14:00', endTime: '15:30',
+                            date: tomorrowStr, section: 'events', completed: false },
+                    ];
+                    saveTasks();
+                }
+            }
+
+            function loadTheme() {
+                const stored = localStorage.getItem(THEME_KEY);
+                if (stored === 'true') {
+                    isDarkMode = true;
+                    document.body.classList.add('dark-mode');
+                    $themeToggle.textContent = '☀️';
+                } else if (stored === 'false') {
+                    isDarkMode = false;
+                    document.body.classList.remove('dark-mode');
+                    $themeToggle.textContent = '🌙';
+                } else {
+                    // System preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        isDarkMode = true;
+                        document.body.classList.add('dark-mode');
+                        $themeToggle.textContent = '☀️';
+                    } else {
+                        isDarkMode = false;
+                        $themeToggle.textContent = '🌙';
+                    }
+                }
+            }
+
+            function saveTheme() {
+                localStorage.setItem(THEME_KEY, isDarkMode);
+            }
+
+            // ─────────────────────────────────────
+            // OVERLAP DETECTION
+            // ─────────────────────────────────────
+            function getOverlappingTasks(newTask, excludeId = null) {
+                const newStart = timeToMinutes(newTask.startTime);
+                const newEnd = timeToMinutes(newTask.endTime);
+                if (newEnd <= newStart) return []; // Invalid range
+
+                let candidates = [];
+
+                if (newTask.section === 'daily') {
+                    // Daily tasks repeat every day; check against ALL daily tasks
+                    candidates = tasks.filter(t => t.section === 'daily' && t.id !== excludeId);
+                } else if (newTask.section === 'weekly') {
+                    // Weekly tasks: check against same dayOfWeek
+                    const dow = newTask.dayOfWeek !== undefined ? newTask.dayOfWeek : null;
+                    candidates = tasks.filter(t =>
+                        t.section === 'weekly' && t.dayOfWeek === dow && t.id !== excludeId
+                    );
+                } else {
+                    // Events & College: check same date & same section
+                    const date = newTask.date || getTodayDateStr();
+                    candidates = tasks.filter(t =>
+                        t.section === newTask.section && t.date === date && t.id !== excludeId
+                    );
+                }
+
+                return candidates.filter(t => {
+                    const tStart = timeToMinutes(t.startTime);
+                    const tEnd = timeToMinutes(t.endTime);
+                    return newStart < tEnd && tStart < newEnd;
+                });
+            }
+
+            function findNextAvailableSlot(newTask) {
+                const newStart = timeToMinutes(newTask.startTime);
+                const newEnd = timeToMinutes(newTask.endTime);
+                const duration = newEnd - newStart;
+                if (duration <= 0) return null;
+
+                // Get all relevant tasks (same overlap criteria)
+                let relevant = [];
+                if (newTask.section === 'daily') {
+                    relevant = tasks.filter(t => t.section === 'daily');
+                } else if (newTask.section === 'weekly') {
+                    const dow = newTask.dayOfWeek !== undefined ? newTask.dayOfWeek : null;
+                    relevant = tasks.filter(t => t.section === 'weekly' && t.dayOfWeek === dow);
+                } else {
+                    const date = newTask.date || getTodayDateStr();
+                    relevant = tasks.filter(t => t.section === newTask.section && t.date === date);
+                }
+
+                // Sort by start time
+                const sorted = relevant
+                    .map(t => ({ start: timeToMinutes(t.startTime), end: timeToMinutes(t.endTime) }))
+                    .sort((a, b) => a.start - b.start);
+
+                // Find gaps starting from the end of the latest conflicting task or the original start
+                const merged = [];
+                for (const block of sorted) {
+                    if (merged.length === 0) {
+                        merged.push({ ...block });
+                    } else {
+                        const last = merged[merged.length - 1];
+                        if (block.start <= last.end) {
+                            last.end = Math.max(last.end, block.end);
+                        } else {
+                            merged.push({ ...block });
+                        }
+                    }
+                }
+
+                // Check gap before first merged block
+                if (merged.length === 0 || merged[0].start >= duration) {
+                    // Available from midnight
+                    return Math.max(0, newStart); // Keep original start if it works
+                }
+
+                // Check gaps between merged blocks
+                for (let i = 0; i < merged.length - 1; i++) {
+                    const gapStart = merged[i].end;
+                    const gapEnd = merged[i + 1].start;
+                    if (gapEnd - gapStart >= duration) {
+                        return gapStart;
+                    }
+                }
+
+                // Check after last merged block
+                const lastEnd = merged[merged.length - 1].end;
+                if (24 * 60 - lastEnd >= duration) {
+                    return lastEnd;
+                }
+
+                return null; // No slot available
+            }
+
+            // ─────────────────────────────────────
+            // RENDER
+            // ─────────────────────────────────────
+            function getFilteredTasks() {
+                const today = getTodayDateStr();
+                if (currentSection === 'daily') {
+                    return tasks.filter(t => t.section === 'daily');
+                } else if (currentSection === 'weekly') {
+                    return tasks.filter(t => t.section === 'weekly').sort((a, b) => (a.dayOfWeek || 0) - (b
+                        .dayOfWeek || 0));
+                } else {
+                    // Events & College: show all (sorted by date, then time)
+                    return tasks
+                        .filter(t => t.section === currentSection)
+                        .sort((a, b) => {
+                            const dateA = a.date || '';
+                            const dateB = b.date || '';
+                            if (dateA !== dateB) return dateA.localeCompare(dateB);
+                            return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+                        });
+                }
+            }
+
+            function renderTaskList() {
+                const filtered = getFilteredTasks();
+                const sectionInfo = {
+                    events: { title: 'Events', dotClass: 'dot-events', icon: '🎯',
+                        subtitle: 'One-time events & occasions' },
+                    college: { title: 'College', dotClass: 'dot-college', icon: '🎓',
+                        subtitle: 'Classes, assignments & academic' },
+                    daily: { title: 'Daily', dotClass: 'dot-daily', icon: '🔄', subtitle: 'Recurring daily routines' },
+                    weekly: { title: 'Weekly', dotClass: 'dot-weekly', icon: '📅',
+                    subtitle: 'Recurring weekly tasks' },
+                };
+                const info = sectionInfo[currentSection];
+                $sectionTitle.textContent = info.title;
+                $sectionDot.className = 'section-dot ' + info.dotClass;
+                $sectionSubtitle.textContent = info.subtitle;
+
+                if (filtered.length === 0) {
+                    $taskList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">${info.icon}</div>
+                            <p>No ${info.title.toLowerCase()} tasks yet.<br>Click the button below to add one!</p>
+                        </div>`;
+                } else {
+                    $taskList.innerHTML = filtered.map(t => {
+                        const completedClass = t.completed ? ' completed' : '';
+                        let stripClass = '';
+                        switch (t.section) {
+                            case 'events':
+                                stripClass = 'strip-events';
+                                break;
+                            case 'college':
+                                stripClass = 'strip-college';
+                                break;
+                            case 'daily':
+                                stripClass = 'strip-daily';
+                                break;
+                            case 'weekly':
+                                stripClass = 'strip-weekly';
+                                break;
+                        }
+                        let metaHtml = '';
+                        if (t.section === 'weekly' && t.dayOfWeek !== undefined) {
+                            metaHtml +=
+                                `<span class="task-date-tag">${getDayName(t.dayOfWeek)}</span>`;
+                        } else if (t.section === 'events' || t.section === 'college') {
+                            if (t.date) {
+                                const d = new Date(t.date + 'T00:00:00');
+                                const formatted = d.toLocaleDateString('en-US', { month: 'short',
+                                    day: 'numeric', year: 'numeric' });
+                                const isToday = t.date === getTodayDateStr();
+                                metaHtml +=
+                                    `<span class="task-date-tag" style="${isToday ? 'font-weight:700;' : ''}">${isToday ? 'Today' : formatted}</span>`;
+                            }
+                        }
+                        metaHtml +=
+                            `<span class="task-time">${formatTime12h(t.startTime)} – ${formatTime12h(t.endTime)}</span>`;
+
+                        return `
+                            <div class="task-card${completedClass}" data-id="${t.id}">
+                                <div class="task-color-strip ${stripClass}"></div>
+                                <div class="task-checkbox" data-action="toggle" data-id="${t.id}">✓</div>
+                                <div class="task-content">
+                                    <span class="task-name">${escapeHtml(t.name)}</span>
+                                    <div class="task-meta">${metaHtml}</div>
+                                </div>
+                                <button class="task-delete" data-action="delete" data-id="${t.id}" title="Delete">🗑</button>
+                            </div>`;
+                    }).join('');
+                }
+
+                // Update badges
+                updateBadges();
+            }
+
+            function updateBadges() {
+                const counts = {
+                    events: tasks.filter(t => t.section === 'events').length,
+                    college: tasks.filter(t => t.section === 'college').length,
+                    daily: tasks.filter(t => t.section === 'daily').length,
+                    weekly: tasks.filter(t => t.section === 'weekly').length,
+                };
+                $badgeEvents.textContent = counts.events;
+                $badgeCollege.textContent = counts.college;
+                $badgeDaily.textContent = counts.daily;
+                $badgeWeekly.textContent = counts.weekly;
+            }
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ─────────────────────────────────────
+            // ACTIONS
+            // ─────────────────────────────────────
+            function addTaskDirectly(taskData) {
+                const newTask = {
+                    id: generateId(),
+                    name: taskData.name.trim(),
+                    startTime: taskData.startTime,
+                    endTime: taskData.endTime,
+                    date: taskData.date || null,
+                    dayOfWeek: taskData.dayOfWeek !== undefined ? taskData.dayOfWeek : null,
+                    section: taskData.section,
+                    completed: false,
+                };
+                tasks.push(newTask);
+                saveTasks();
+                renderTaskList();
+                showToast('✅ Task added successfully!');
+            }
+
+            function attemptAddTask(taskData) {
+                const overlaps = getOverlappingTasks(taskData);
+                if (overlaps.length > 0) {
+                    // Show overlap warning
+                    pendingTask = { ...taskData };
+                    pendingResolved = false;
+                    showOverlapWarning(overlaps);
+                } else {
+                    addTaskDirectly(taskData);
+                    closeModal();
+                }
+            }
+
+            function showOverlapWarning(conflicts) {
+                $modalTitle.textContent = '⚠️ Schedule Conflict';
+                $modalFormContent.style.display = 'none';
+                $modalOverlapContent.style.display = 'block';
+                $conflictList.innerHTML = conflicts.map(c => `
+                    <div class="conflict-task-mini">
+                        <strong>${escapeHtml(c.name)}</strong> — ${formatTime12h(c.startTime)} to ${formatTime12h(c.endTime)}
+                        ${c.date ? ' · ' + c.date : ''}
+                        ${c.dayOfWeek !== undefined ? ' · ' + getDayName(c.dayOfWeek) : ''}
+                    </div>
+                `).join('');
+            }
+
+            function resolveOverlapKeep() {
+                if (pendingTask) {
+                    addTaskDirectly(pendingTask);
+                    pendingTask = null;
+                    pendingResolved = true;
+                    closeModal();
+                    showToast('📌 Task kept with overlap.');
+                }
+            }
+
+            function resolveOverlapReschedule() {
+                if (!pendingTask) return;
+                const slot = findNextAvailableSlot(pendingTask);
+                if (slot !== null) {
+                    const duration = timeToMinutes(pendingTask.endTime) - timeToMinutes(pendingTask.startTime);
+                    pendingTask.startTime = minutesToTime(slot);
+                    pendingTask.endTime = minutesToTime(slot + duration);
+                    addTaskDirectly(pendingTask);
+                    pendingTask = null;
+                    pendingResolved = true;
+                    closeModal();
+                    showToast(`🕐 Rescheduled to ${formatTime12h(minutesToTime(slot))}.`);
+                } else {
+                    showToast('😔 No available slot found today. Try a different day or keep the overlap.');
+                }
+            }
+
+            function resolveOverlapCancel() {
+                // Go back to form
+                $modalTitle.textContent = '📝 Add New Task';
+                $modalFormContent.style.display = 'block';
+                $modalOverlapContent.style.display = 'none';
+                // Restore pending task data into form
+                if (pendingTask) {
+                    $inputTaskName.value = pendingTask.name;
+                    $inputStartTime.value = pendingTask.startTime;
+                    $inputEndTime.value = pendingTask.endTime;
+                    if (pendingTask.section === 'weekly') {
+                        $inputDayOfWeek.value = pendingTask.dayOfWeek !== undefined ? pendingTask.dayOfWeek : 0;
+                    } else if (pendingTask.section === 'events' || pendingTask.section === 'college') {
+                        $inputDate.value = pendingTask.date || getTodayDateStr();
+                    }
+                }
+                // Don't clear pendingTask yet; user might edit and resubmit
+            }
+
+            function deleteTask(id) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveTasks();
+                renderTaskList();
+                showToast('🗑 Task deleted.');
+            }
+
+            function toggleTaskComplete(id) {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    saveTasks();
+                    renderTaskList();
+                }
+            }
+
+            function closeModal() {
+                $taskModal.style.display = 'none';
+                $modalFormContent.style.display = 'block';
+                $modalOverlapContent.style.display = 'none';
+                $modalTitle.textContent = '📝 Add New Task';
+                pendingTask = null;
+                pendingResolved = false;
+                // Clear form
+                $inputTaskName.value = '';
+                $inputStartTime.value = '09:00';
+                $inputEndTime.value = '10:00';
+                $inputDate.value = getTodayDateStr();
+                $inputDayOfWeek.value = '0';
+            }
+
+            function openModal() {
+                $taskModal.style.display = 'flex';
+                $modalFormContent.style.display = 'block';
+                $modalOverlapContent.style.display = 'none';
+                $modalTitle.textContent = '📝 Add New Task';
+                pendingTask = null;
+                pendingResolved = false;
+                $inputTaskName.value = '';
+                $inputStartTime.value = '09:00';
+                $inputEndTime.value = '10:00';
+                $inputDate.value = getTodayDateStr();
+                $inputDayOfWeek.value = String(new Date().getDay());
+
+                // Adapt form based on section
+                if (currentSection === 'daily') {
+                    $dateFieldGroup.style.display = 'none';
+                    $dayFieldGroup.style.display = 'none';
+                } else if (currentSection === 'weekly') {
+                    $dateFieldGroup.style.display = 'none';
+                    $dayFieldGroup.style.display = 'block';
+                } else {
+                    $dateFieldGroup.style.display = 'block';
+                    $dayFieldGroup.style.display = 'none';
+                }
+                $inputTaskName.focus();
+            }
+
+            function showToast(message) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+            }
+
+            // ─────────────────────────────────────
+            // DATE/TIME UPDATE
+            // ─────────────────────────────────────
+            function updateDateTime() {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+                $dateDisplay.textContent = dateStr;
+                const hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const h12 = hours % 12 || 12;
+                $timeDisplay.innerHTML = `${h12}:${minutes}<span class="seconds">:${seconds} ${ampm}</span>`;
+            }
+
+            // ─────────────────────────────────────
+            // EVENT LISTENERS
+            // ─────────────────────────────────────
+            $themeToggle.addEventListener('click', () => {
+                isDarkMode = !isDarkMode;
+                if (isDarkMode) {
+                    document.body.classList.add('dark-mode');
+                    $themeToggle.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    $themeToggle.textContent = '🌙';
+                }
+                saveTheme();
+            });
+
+            $sectionTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('.tab-btn');
+                if (!btn) return;
+                const section = btn.dataset.section;
+                if (section && section !== currentSection) {
+                    currentSection = section;
+                    // Update tab active states
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active',
+                        'events-tab', 'college-tab', 'daily-tab', 'weekly-tab'));
+                    btn.classList.add('active');
+                    if (section === 'events') btn.classList.add('events-tab');
+                    if (section === 'college') btn.classList.add('college-tab');
+                    if (section === 'daily') btn.classList.add('daily-tab');
+                    if (section === 'weekly') btn.classList.add('weekly-tab');
+                    renderTaskList();
+                }
+            });
+
+            $addTaskBtn.addEventListener('click', openModal);
+
+            $taskModal.addEventListener('click', (e) => {
+                if (e.target === $taskModal) {
+                    closeModal();
+                }
+            });
+
+            $btnCancelTask.addEventListener('click', closeModal);
+            $btnCancelOverlap.addEventListener('click', resolveOverlapCancel);
+            $btnKeepOverlap.addEventListener('click', resolveOverlapKeep);
+            $btnReschedule.addEventListener('click', resolveOverlapReschedule);
+
+            $btnSaveTask.addEventListener('click', () => {
+                const name = $inputTaskName.value.trim();
+                const startTime = $inputStartTime.value;
+                const endTime = $inputEndTime.value;
+
+                if (!name) {
+                    showToast('⚠️ Please enter a task name.');
+                    $inputTaskName.focus();
+                    return;
+                }
+                if (!startTime || !endTime) {
+                    showToast('⚠️ Please set both start and end times.');
+                    return;
+                }
+                if (timeToMinutes(endTime) <= timeToMinutes(startTime)) {
+                    showToast('⚠️ End time must be after start time.');
+                    return;
+                }
+
+                const taskData = {
+                    name,
+                    startTime,
+                    endTime,
+                    section: currentSection,
+                    date: null,
+                    dayOfWeek: null,
+                };
+
+                if (currentSection === 'daily') {
+                    taskData.date = null;
+                    taskData.dayOfWeek = null;
+                } else if (currentSection === 'weekly') {
+                    taskData.date = null;
+                    taskData.dayOfWeek = parseInt($inputDayOfWeek.value, 10);
+                } else {
+                    taskData.date = $inputDate.value || getTodayDateStr();
+                    taskData.dayOfWeek = null;
+                }
+
+                attemptAddTask(taskData);
+            });
+
+            // Task list clicks (toggle, delete)
+            $taskList.addEventListener('click', (e) => {
+                const actionEl = e.target.closest('[data-action]');
+                if (!actionEl) return;
+                const action = actionEl.dataset.action;
+                const id = actionEl.dataset.id;
+                if (action === 'toggle') {
+                    toggleTaskComplete(id);
+                } else if (action === 'delete') {
+                    if (confirm('Delete this task?')) {
+                        deleteTask(id);
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if ($taskModal.style.display === 'flex') {
+                        if ($modalOverlapContent.style.display === 'block') {
+                            resolveOverlapCancel();
+                        } else {
+                            closeModal();
+                        }
+                    }
+                }
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    openModal();
+                }
+            });
+
+            // ─────────────────────────────────────
+            // INIT
+            // ─────────────────────────────────────
+            function init() {
+                loadTheme();
+                loadTasks();
+                updateDateTime();
+                renderTaskList();
+                setInterval(updateDateTime, 1000);
+                // Set initial active tab styling
+                const activeTab = document.querySelector(`.tab-btn[data-section="${currentSection}"]`);
+                if (activeTab) {
+                    activeTab.classList.add('active', 'events-tab');
+                }
+            }
+
+            init();
+            console.log('✅ TaskFlow ready! Sections: Events, College, Daily, Weekly');
+            console.log('💡 Tip: Press Ctrl+N to quickly add a new task.');
+        })();
+    </script>
+</body>
+</html>
